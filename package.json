@@ -1,0 +1,12 @@
+{
+    "name": "ataraxia-rolls",
+    "version": "1.0.0",
+    "description": "Small bot for rolling dices & maybe more !",
+    "main": "bot.js",
+    "author": "GitPAV",
+    "dependencies": {
+        "axios": "^0.19.2",
+        "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+        "winston": "^3.2.1"
+    }
+}
