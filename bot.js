@@ -84,12 +84,14 @@ bot.on('message', function (user, userID, channelID, message, evt) {
                 console.log(typeof result)
                 console.log(typeof bonus)
                 result[0] = result[0] + bonus
-                let messages = `${user} Rolled ${params}, and got :\n ${result}`
-
+                let messages = 
+                    ` **${user}** rolled **${params}** and got : **${result}**`
+ 
                 bot.sendMessage({
                     to: channelID,
                     message: messages,
                 });
+
             }
 
 
@@ -103,7 +105,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
                 sums = sums + bonus
                 let bonusIncluded = `= ${sums}`
-                let messages = `${user} Rolled ${params}, and got :\n ${result} ${bonusIncluded}`
+                let messages = `${user} rolled ${params}, and got :\n ${result} ${bonusIncluded}`
 
                 bot.sendMessage({
                     to: channelID,
