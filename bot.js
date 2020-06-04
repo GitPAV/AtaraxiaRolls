@@ -1,10 +1,11 @@
 // Discord needed imports :
-var Discord = require('discord.io');
-var logger = require('winston');
-var auth = require('./auth.json');
+let Discord = require('discord.io');
+let logger = require('winston');
+let auth = require('./auth.json');
 
 // Custom imports : 
 let rollModule = require('./botFile/roll')
+let randomStringModule = require('./botFile/randomString')
 
 const axios = require('axios');
 
@@ -17,7 +18,7 @@ logger.add(new logger.transports.Console, {
 logger.level = 'debug';
 
 // Initialize Discord Bot
-var bot = new Discord.Client({
+let bot = new Discord.Client({
     token: auth.token,
     autorun: true
 });
@@ -39,39 +40,41 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
     // Checking the command symbol
     if (message.substring(0, 1) == '!') {
-        var args = message.substring(1).split(' ');
+        let userParams = message.substring(1).split(' ');
+        let messages = ''
 
-        let command = args[0]
-        let params = args[1]
+        // User command
+        let command = userParams[0]
+        // RollParams, cuted after first space
+        let rollParams = userParams[1]
 
         console.log('commande :',command)
-        console.log('params :',params)
+        console.log('rollParams :',rollParams)
+        console.log('userParams base',userParams)
 
         // ***********************************
         // ************ HELP *****************
         // ***********************************
 
         // ***********************************
-        // ******** RANDOMIZE WORDS **********
+        // ******* RANDOMIZE STRINGS *********
         // ***********************************
         if (command.startsWith('randomize')) {
+            messages = randomStringModule.handleRandomizeCommands(userParams, user)
         }
 
         // ***********************************
         // ************ ROLLS ****************
         // ***********************************
         if (command.startsWith('roll')) {
-            let messages = rollModule.handleDiceCommands(params, user)
-
-            if (messages.length > 0) {
-
-                bot.sendMessage({
-                    to: channelID,
-                    message: messages,
-                });
-
-            }
+            messages = rollModule.handleDiceCommands(rollParams, user)
         }
-
+        
+        if (messages.length > 0) {
+            bot.sendMessage({
+                to: channelID,
+                message: messages,
+            });
+        }
     }
 });

@@ -6,6 +6,7 @@ module.exports = {
         // Saving user command in order to display it later
         let userRollCommand = params
         let bonus = 0
+        let twentyfaceDice = false
         let result
 
         // ** Spilting arguments in command, to get numberOfDice and NumberOfFace **
@@ -21,10 +22,14 @@ module.exports = {
             numberOfFace = faceAndBonus[0]
         }
 
+        if(numberOfDice == 1 && numberOfFace == 20) {
+            twentyfaceDice = true 
+        }
+
         // ** Actual roll **
         result = rollDice(numberOfDice, numberOfFace)
 
-        return displayRollResult(userRollCommand, result, bonus, user)
+        return displayRollResult(userRollCommand, result, bonus, user, twentyfaceDice)
     },
 };
 
@@ -45,7 +50,7 @@ const rollDice = (nbrOfDices, nbrOfFaces) => {
 // ************************************************************************
 // * Display roll results, based on number of results (one roll or > one) *
 // ************************************************************************    
-const displayRollResult = (userRollCommand, result, bonus, user) => {
+const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice) => {
     let messages = ''
 
     // 1) IF RESULT IS ONLY 1 ROLL
@@ -55,12 +60,20 @@ const displayRollResult = (userRollCommand, result, bonus, user) => {
         if (bonus > 0) {
             let resultPlusBonus = parseInt(result, 10) + bonus
             messages =
-                `>>> **${user}** rolled **${userRollCommand}** and got : **${result}** + *${bonus}*  = ***${resultPlusBonus}***`
+                `>>> **${user}** rolled **${userRollCommand}** and got : **${result}** \n\n __Final result__ : **${result}** + *${bonus}*  = ***${resultPlusBonus}***`
         }
 
         else {
             messages =
                 `>>> **${user}** rolled **${userRollCommand}** and got : ***${result}***`
+        }
+
+        // Handle critical failure/sucess for d20
+        if(twentyfaceDice == true && result == 0) {
+            messages += `\n\n ***CRITICAL FAILURE !!***`
+        }
+        else if(twentyfaceDice == true && result == 20) {
+            messages += `\n\n ***NATURAL TWENTY !!***`
         }
 
     }
