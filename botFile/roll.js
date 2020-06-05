@@ -16,10 +16,18 @@ module.exports = {
         let numberOfFace = params[1]
 
         // ** Checking if there is bonus number to add to the roll **
-        if (numberOfFace.includes('+')) {
-            faceAndBonus = numberOfFace.split('+')
-            bonus = parseInt(faceAndBonus[1], 10)
-            numberOfFace = faceAndBonus[0]
+        if (numberOfFace.includes('+') || numberOfFace.includes('-')) {
+            if(numberOfFace.includes('+')) {
+                faceAndBonus = numberOfFace.split('+')
+                bonus = parseInt(faceAndBonus[1], 10)
+                numberOfFace = faceAndBonus[0]
+            }
+            if(numberOfFace.includes('-')) {
+                faceAndBonus = numberOfFace.split('-')
+                bonus = parseInt(faceAndBonus[1], 10)
+                bonus = -Math.abs(bonus)
+                numberOfFace = faceAndBonus[0]
+            }
         }
 
         if(numberOfDice == 1 && numberOfFace == 20) {
@@ -62,7 +70,15 @@ const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice)
             messages =
                 `>>> **${user}** rolled **${userRollCommand}** and got : **${result}** \n\n __Final result__ : **${result}** + *${bonus}*  = ***${resultPlusBonus}***`
         }
+        // If the bonus is negative, change display and sums
+        else if(bonus < 0) {
+            bonus = Math.abs(bonus)
+            let resultPlusBonus = parseInt(result, 10) - bonus
+            messages =
+                `>>> **${user}** rolled **${userRollCommand}** and got : **${result}** \n\n __Final result__ : **${result}** - *${bonus}*  = ***${resultPlusBonus}***`
+        }
 
+        // Else basic message
         else {
             messages =
                 `>>> **${user}** rolled **${userRollCommand}** and got : ***${result}***`
@@ -102,7 +118,14 @@ const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice)
             let resultPlusBonus = parseInt(sums, 10) + bonus
             messages = `>>> **${user}** rolled **${userRollCommand}**, and got : ${humanResults} = ***${sums}*** \n\n __Final result__ : **${sums}** + *${bonus}*  = ***${resultPlusBonus}***`
         }
+        // If the bonus is negativ, cahnge display and sums
+        else if(bonus < 0) {
+            bonus = Math.abs(bonus)
+            let resultPlusBonus = parseInt(sums, 10) - bonus
+            messages = `>>> **${user}** rolled **${userRollCommand}**, and got : ${humanResults} = ***${sums}*** \n\n __Final result__ : **${sums}** - *${bonus}*  = ***${resultPlusBonus}***`
+        }
 
+        // Else basic display
         else {
             messages = `>>> **${user}** rolled **${userRollCommand}**, and got :\n\n ${humanResults} = ***${sums}***`
         }
