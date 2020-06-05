@@ -64,7 +64,7 @@ const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice)
     // 1) IF RESULT IS ONLY 1 ROLL
     if (result.length == 1) {
 
-        // If there is a bonus, change display and sums
+        // ** Checking if there is bonus number to add to the roll **
         if (bonus > 0) {
             let resultPlusBonus = parseInt(result, 10) + bonus
             messages =
@@ -113,7 +113,7 @@ const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice)
             humanResults += result[i] + ' + '
         }
 
-        // If there is a bonus, change display and sums
+        // ** Checking if there is bonus number to add to the roll **
         if (bonus > 0) {
             let resultPlusBonus = parseInt(sums, 10) + bonus
             messages = `>>> **${user}** rolled **${userRollCommand}**, and got : ${humanResults} = ***${sums}*** \n\n __Final result__ : **${sums}** + *${bonus}*  = ***${resultPlusBonus}***`
@@ -131,6 +131,6 @@ const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice)
         }
     }
 
-    // Return message
+    // 3) RETURN CORECT MESSAGE
     return messages
 }

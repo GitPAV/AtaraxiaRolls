@@ -3,19 +3,14 @@ module.exports = {
     // ********************* Randomize string handler *************************
     // ************************************************************************
     handleRandomizeCommands: (params, user) => {
-        console.log('param in module',params)
-
-        // Espace en trop a éliminer ici
-        for (let i = 0; i < params.length; i++) {
-            console.log(params[i].length)
-        }
-
         // Future array with removed command in params
         let sortedParams = []
 
-        // Removing command from params
+        // Removing command from params, and remove whitespaces
         for (let i = 1; i < params.length; i++) {
-            sortedParams.push(params[i])
+            if(params[i].length > 0) {
+                sortedParams.push(params[i])
+            }
         }
 
         // Picking random number based on params array.length
