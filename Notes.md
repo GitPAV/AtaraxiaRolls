@@ -8,14 +8,17 @@ Step :
 
     4) symbole -ok
 
-    5) Rellier le bot a l'api dungeon&dragon pour avoir des info en temps réel sans devoir aller sur un navigateur
+    5) Problème whitespace randomString -ok
+
+    6) Rellier le bot a l'api dungeon&dragon pour avoir des info en temps réel sans devoir aller sur un navigateur
 
     Déploiment sur aws
 
 BASE de donnée super interéssant :
 commande de l'api, comment la rendre accesible ?
 
-**JDR**
+*** JDR ***
+**Custom roll:**
 + 1 param pour un seuille de réussite
 
 + 1 param pour établire un reroll

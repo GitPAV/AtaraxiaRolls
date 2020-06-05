@@ -66,15 +66,31 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         // ***********************************
         // ************ ROLLS ****************
         // ***********************************
-        if (command.startsWith('roll')) {
+        else if (command.startsWith('roll')) {
             messages = rollModule.handleDiceCommands(rollParams, user)
         }
         
+        // ****** END OF USER COMMANDS *******
+        // If there is a message display it, if not, display default message
         if (messages.length > 0) {
             bot.sendMessage({
                 to: channelID,
                 message: messages,
             });
         }
+        // Display error messages, if there is no messages to send
+        else {
+            let defaultMessageEmojiPool = ['🦮','🐕‍🦺','🐶','🐕',]
+            let randomDogEmoji = Math.floor(Math.random() * defaultMessageEmojiPool.length);
+            console.log('random number ???',randomDogEmoji)
+
+            messages = `>>> Sorry **${user}**, I did not understand your request   ${defaultMessageEmojiPool[randomDogEmoji]}`
+
+            bot.sendMessage({
+                to: channelID,
+                message: messages,
+            });
+        }
+
     }
 });
