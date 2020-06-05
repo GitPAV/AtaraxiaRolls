@@ -3,6 +3,7 @@ module.exports = {
     // ** MAIN ROLL FUNCTION, Manage rolls dependings on user command params **
     // ************************************************************************
     handleDiceCommands: (params, user) => {
+        console.log('param in starting modules',params)
         // Saving user command in order to display it later
         let userRollCommand = params
         let bonus = 0
@@ -11,6 +12,8 @@ module.exports = {
 
         // ** Spilting arguments in command, to get numberOfDice and NumberOfFace **
         params = params.split('d')
+
+        console.log('exploded param in modules',params)
 
         let numberOfDice = params[0]
         let numberOfFace = params[1]
