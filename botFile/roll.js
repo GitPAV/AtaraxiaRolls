@@ -2,18 +2,21 @@ module.exports = {
     // ************************************************************************
     // ** MAIN ROLL FUNCTION, Manage rolls dependings on user command params **
     // ************************************************************************
-    handleDiceCommands: (params, user) => {
-        console.log('param in starting modules',params)
+    handleDiceCommands: (params, user, rollOptionParam) => {
+        console.log('paramOpt in starting modules: ', rollOptionParam)
         // Saving user command in order to display it later
         let userRollCommand = params
+        // Bonus to add to final count (positive of negative)
         let bonus = 0
+        // Special display if dice has 20 faces
         let twentyfaceDice = false
+        // Sums of rolled dice
         let result
+        // Displayed message
+        let message = ''
 
         // ** Spilting arguments in command, to get numberOfDice and NumberOfFace **
         params = params.split('d')
-
-        console.log('exploded param in modules',params)
 
         let numberOfDice = params[0]
         let numberOfFace = params[1]
@@ -33,17 +36,43 @@ module.exports = {
             }
         }
 
+        // Check if the dice has 20 faces
         if(numberOfDice == 1 && numberOfFace == 20) {
             twentyfaceDice = true 
         }
 
         // ** Actual roll **
         result = rollDice(numberOfDice, numberOfFace)
+        // ** Base message based on result and number of dice rolled **
+        message = displayRollResult(userRollCommand, result, bonus, user, twentyfaceDice)
 
-        return displayRollResult(userRollCommand, result, bonus, user, twentyfaceDice)
+        // Additional parameter handled here
+        if(rollOptionParam != undefined) {
+            // 1) Average, -a
+            if(rollOptionParam == 'average' || rollOptionParam == '-a') {
+                return message = makeAverage(result, message)
+            }
+
+            // 2) Sucess, -s(x)
+            if(rollOptionParam.includes('sucess') || rollOptionParam.includes('-s')) {
+                if(rollOptionParam.includes('sucess')) {
+                    rollOptionParam = rollOptionParam.split('sucess')
+                    rollOptionParam = rollOptionParam[1]
+                    console.log('paramDansIf:',rollOptionParam)
+                    defineSucess(result, message, rollOptionParam)
+                }
+                else if(rollOptionParam.includes('-s')) {
+                    rollOptionParam = rollOptionParam.split('-p')
+                    rollOptionParam = rollOptionParam[1]
+                    defineSucess(result, message, rollOptionParam)
+                }
+            }
+        }
+        
+        return message
     },
 };
-
+// - Dice Roll main function :
 // ************************************************************************
 // ************************ Roll dice function ****************************
 // ************************************************************************
@@ -88,7 +117,7 @@ const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice)
         }
 
         // Handle critical failure/sucess for d20
-        if(twentyfaceDice == true && result == 0) {
+        if(twentyfaceDice == true && result == 1) {
             messages += `\n\n ***CRITICAL FAILURE !!***`
         }
         else if(twentyfaceDice == true && result == 20) {
@@ -136,4 +165,32 @@ const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice)
 
     // 3) RETURN CORECT MESSAGE
     return messages
+}
+
+// - Dice Roll options :
+// ************************************************************************
+// ************** Make the average of result and display it ***************
+// ************************************************************************
+const makeAverage = (result, message) => {
+    let average = 0
+
+    // Add all diceroll to have to sums
+    for (let i = 0; i < result.length; i++) {
+        console.log(typeof result[i])
+        average += result[i]
+    }
+
+    // Divide by number of dice rolled to get the average
+    average = average / result.length
+
+    // Edit the message to display average
+    message += `\n\n The *average* of rolls is : **${average}**`
+    return message
+}
+
+// ************************************************************************
+// *********** Define sucess param for dice roll and display it ***********
+// ************************************************************************
+const defineSucess = (result, message) => {
+
 }

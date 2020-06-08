@@ -19,11 +19,11 @@ Step :
 
 *** JDR advices *** 
 **Custom roll to do:**
-+ 1 param qui donne la moyenne
-
-+ 1 param pour établire un reroll
++ 1 param qui donne la moyenne -done
 
 + 1 param pour un seuille de réussite
+
++ 1 param pour établire un reroll 
 
 + 1 param pour les dés explosifs (voir google)
 

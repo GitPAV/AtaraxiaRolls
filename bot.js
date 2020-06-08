@@ -40,17 +40,22 @@ bot.on('message', function (user, userID, channelID, message, evt) {
 
     // Checking the command symbol
     if (message.substring(0, 1) == '!') {
+        // Full user command, splited on whitespace
         let userParams = message.substring(1).split(' ');
+        // Display message variable, filled by function call
         let messages = ''
 
         // User command
         let command = userParams[0]
         // RollParams, cuted after first space
         let rollParams = userParams[1]
+        // Option for roll command
+        let rollOptionParam = userParams[2]
 
-        console.log('commande :',command)
-        console.log('rollParams :',rollParams)
-        console.log('userParams base',userParams)
+        console.log('commande :', command)
+        console.log('userParams base', userParams)
+        console.log('rollParams :', rollParams)
+        console.log('rollParamsOption :', rollOptionParam)
 
         // ***********************************
         // ************ HELP *****************
@@ -67,7 +72,7 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         // ************ ROLLS ****************
         // ***********************************
         else if (command.startsWith('roll')) {
-            messages = rollModule.handleDiceCommands(rollParams, user)
+            messages = rollModule.handleDiceCommands(rollParams, user, rollOptionParam)
         }
         
         // ****** END OF USER COMMANDS *******
@@ -82,7 +87,6 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         else {
             let defaultMessageEmojiPool = ['🦮','🐕‍🦺','🐶','🐕',]
             let randomDogEmoji = Math.floor(Math.random() * defaultMessageEmojiPool.length);
-            console.log('random number ???',randomDogEmoji)
 
             messages = `>>> Sorry **${user}**, I did not understand your request   ${defaultMessageEmojiPool[randomDogEmoji]}`
 
