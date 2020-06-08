@@ -58,13 +58,12 @@ module.exports = {
                 if(rollOptionParam.includes('sucess')) {
                     rollOptionParam = rollOptionParam.split('sucess')
                     rollOptionParam = rollOptionParam[1]
-                    console.log('paramDansIf:',rollOptionParam)
-                    defineSucess(result, message, rollOptionParam)
+                    return message = defineSucess(result, message, rollOptionParam, numberOfFace)
                 }
                 else if(rollOptionParam.includes('-s')) {
-                    rollOptionParam = rollOptionParam.split('-p')
+                    rollOptionParam = rollOptionParam.split('-s')
                     rollOptionParam = rollOptionParam[1]
-                    defineSucess(result, message, rollOptionParam)
+                    return message = defineSucess(result, message, rollOptionParam, numberOfFace)
                 }
             }
         }
@@ -191,6 +190,40 @@ const makeAverage = (result, message) => {
 // ************************************************************************
 // *********** Define sucess param for dice roll and display it ***********
 // ************************************************************************
-const defineSucess = (result, message) => {
+const defineSucess = (result, message, sucessThreshold, numberOfFace) => {
+    // New array to push sucessfull roll in
+    let sucessfullRoll = []
 
+    // 1) Handle bad user setting
+    if(sucessThreshold < 0 || sucessThreshold > numberOfFace) {
+        message += `\n\n ⚠️ *Invalid sucess setting, you must pick a number between 1 and max roll* ⚠️`
+        return message
+    }
+
+    // Find result that match sucess threshold
+    for (let i = 0; i < result.length; i++) {
+        if(result[i] >= sucessThreshold) {
+            sucessfullRoll.push(result[i])
+        }
+    }
+
+    // 2) If there is sucessfull roll 
+    if(sucessfullRoll.length > 0) {
+        let displayedSucessfullRoll = ''
+        for (let i = 0; i < sucessfullRoll.length; i++) {
+            console.log("ICI", i == sucessfullRoll[sucessfullRoll.length - 1])
+            if(i == (sucessfullRoll.length -1)) {
+                displayedSucessfullRoll += sucessfullRoll[i]
+            }
+            else {
+                displayedSucessfullRoll += sucessfullRoll[i] + ', '
+            }
+        }
+        return message += `\n\n Based on **${sucessThreshold}**, You got **${sucessfullRoll.length}** sucessfull roll : \n\n - ${displayedSucessfullRoll}`
+    }
+
+    // 3) If there is no sucessfull roll 
+    if(sucessfullRoll.length == 0) {
+        return message += `\n\n Based on **${sucessThreshold}**, you got no sucessfull roll`
+    }
 }

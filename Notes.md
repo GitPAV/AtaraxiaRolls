@@ -15,13 +15,15 @@ Step :
     7) Rellier le bot a l'api dungeon&dragon pour avoir des info en temps réel sans devoir aller sur un navigateur
     (Mettre en place, spell by class & lvl, mettre en place le search global)
 
+    8) Permettre plusieurs option sur le même lancé de dès
+
     8) Déploiment sur aws
 
 *** JDR advices *** 
 **Custom roll to do:**
 + 1 param qui donne la moyenne -done
 
-+ 1 param pour un seuille de réussite
++ 1 param pour un seuille de réussite -done
 
 + 1 param pour établire un reroll 
 
