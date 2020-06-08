@@ -12,12 +12,12 @@ Step :
 
     6) Default error message -ok
 
-    7) Rellier le bot a l'api dungeon&dragon pour avoir des info en temps réel sans devoir aller sur un navigateur
+    7) Permettre plusieurs option sur le même lancé de dès -ok
+
+    8) Rellier le bot a l'api dungeon&dragon pour avoir des info en temps réel sans devoir aller sur un navigateur
     (Mettre en place, spell by class & lvl, mettre en place le search global)
 
-    8) Permettre plusieurs option sur le même lancé de dès -ok
-
-    8) Déploiment sur aws
+    9) Déploiment sur aws
 
 *** JDR advices *** 
 **Custom roll to do:**
@@ -25,7 +25,7 @@ Step :
 
 + 1 param pour un seuille de réussite -done
 
-+ 1 param pour établire un reroll 
++ 1 param pour établire un reroll ()
 
 + 1 param pour les dés explosifs (voir google)
 

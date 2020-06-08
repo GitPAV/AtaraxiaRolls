@@ -58,7 +58,7 @@ module.exports = {
                     message = makeAverage(result, message)
                 }
     
-                // 2) success, -s(x)
+                // 2) success(x), -s(x)
                 if(rollOptionParam[i].includes('success') || rollOptionParam[i].includes('-s')) {
                     let successParam = []
 
@@ -74,13 +74,30 @@ module.exports = {
                         successParam = successParam[1]
                         message = defineSuccess(result, message, successParam, numberOfFace)
                     }
-                }  
+                }
+                
+                // 3) reroll(x), -r(x)
+                if(rollOptionParam[i].includes('reroll') || rollOptionParam[i].includes('-r')) {
+                    let rerollParam = []
+                    let commandArray = ['reroll', '-r']
+
+                    for (let j = 0; j < commandArray.length; j++) {
+                        if(rollOptionParam[i].includes(commandArray[j])) {
+                            rerollParam = rollOptionParam[i]
+                            rerollParam = rerollParam.split(commandArray[j])
+                            rerollParam = rerollParam[1]
+                            rerollParam = rerollParam.split('/')
+                            message = rerollDice(result, message, rerollParam, user)
+                        }
+                    }
+                }
             }
         }
         
         return message
     },
 };
+
 // - Dice Roll main function :
 // ************************************************************************
 // ************************ Roll dice function ****************************
@@ -185,7 +202,6 @@ const makeAverage = (result, message) => {
 
     // Add all diceroll to have to sums
     for (let i = 0; i < result.length; i++) {
-        console.log(typeof result[i])
         average += result[i]
     }
 
@@ -198,7 +214,7 @@ const makeAverage = (result, message) => {
 }
 
 // ************************************************************************
-// *********** Define success param for dice roll and display it ***********
+// ********** Define success param for dice roll and display it ***********
 // ************************************************************************
 const defineSuccess = (result, message, successThreshold, numberOfFace) => {
     // New array to push successfull roll in
@@ -235,4 +251,29 @@ const defineSuccess = (result, message, successThreshold, numberOfFace) => {
     if(successfullRoll.length == 0) {
         return message += `\n\n Based on **${successThreshold}**, you got no successfull roll`
     }
+}
+
+// ************************************************************************
+// **** Define reroll paramters and roll again if the value is matched ****
+// ************************************************************************
+const rerollDice = (result, message, rerollParam, user) => {
+    console.log('1111:',user)
+    console.log(rerollParam)
+    console.log(message)
+    console.log(result)
+
+    for (let i = 0; i < rerollParam.length; i++) {
+        console.log('reroll dans boucle:',rerollParam[i])
+        console.log('reroll length :',rerollParam[i].length)
+
+        if(rerollParam[i].length === 0) {
+            rerollParam = rerollParam.slice(i, i+1)
+        }
+        console.log('reroll après boucle:',rerollParam[i])
+    }
+
+    for (let i = 0; i < result.length; i++) {
+    }
+
+    return message
 }
