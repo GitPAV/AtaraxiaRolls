@@ -48,23 +48,33 @@ module.exports = {
 
         // Additional parameter handled here
         if(rollOptionParam != undefined) {
-            // 1) Average, -a
-            if(rollOptionParam == 'average' || rollOptionParam == '-a') {
-                return message = makeAverage(result, message)
-            }
 
-            // 2) Sucess, -s(x)
-            if(rollOptionParam.includes('sucess') || rollOptionParam.includes('-s')) {
-                if(rollOptionParam.includes('sucess')) {
-                    rollOptionParam = rollOptionParam.split('sucess')
-                    rollOptionParam = rollOptionParam[1]
-                    return message = defineSucess(result, message, rollOptionParam, numberOfFace)
+            rollOptionParam = rollOptionParam.split(' ')
+            console.log('rollOpt after split:',rollOptionParam)
+
+            for (let i = 0; i < rollOptionParam.length; i++) {
+                // 1) Average, -a
+                if(rollOptionParam[i] == 'average' || rollOptionParam[i] == '-a') {
+                    message = makeAverage(result, message)
                 }
-                else if(rollOptionParam.includes('-s')) {
-                    rollOptionParam = rollOptionParam.split('-s')
-                    rollOptionParam = rollOptionParam[1]
-                    return message = defineSucess(result, message, rollOptionParam, numberOfFace)
-                }
+    
+                // 2) success, -s(x)
+                if(rollOptionParam[i].includes('success') || rollOptionParam[i].includes('-s')) {
+                    let successParam = []
+
+                    if(rollOptionParam[i].includes('success')) {
+                        successParam = rollOptionParam[i]
+                        successParam = successParam.split('success')
+                        successParam = successParam[1]
+                        message = defineSuccess(result, message, successParam, numberOfFace)
+                    }
+                    else if(rollOptionParam[i].includes('-s')) {
+                        successParam = rollOptionParam[i]
+                        successParam = successParam.split('-s')
+                        successParam = successParam[1]
+                        message = defineSuccess(result, message, successParam, numberOfFace)
+                    }
+                }  
             }
         }
         
@@ -115,7 +125,7 @@ const displayRollResult = (userRollCommand, result, bonus, user, twentyfaceDice)
                 `>>> **${user}** rolled **${userRollCommand}** and got : ***${result}***`
         }
 
-        // Handle critical failure/sucess for d20
+        // Handle critical failure/success for d20
         if(twentyfaceDice == true && result == 1) {
             messages += `\n\n ***CRITICAL FAILURE !!***`
         }
@@ -188,42 +198,41 @@ const makeAverage = (result, message) => {
 }
 
 // ************************************************************************
-// *********** Define sucess param for dice roll and display it ***********
+// *********** Define success param for dice roll and display it ***********
 // ************************************************************************
-const defineSucess = (result, message, sucessThreshold, numberOfFace) => {
-    // New array to push sucessfull roll in
-    let sucessfullRoll = []
+const defineSuccess = (result, message, successThreshold, numberOfFace) => {
+    // New array to push successfull roll in
+    let successfullRoll = []
 
     // 1) Handle bad user setting
-    if(sucessThreshold < 0 || sucessThreshold > numberOfFace) {
-        message += `\n\n ⚠️ *Invalid sucess setting, you must pick a number between 1 and max roll* ⚠️`
+    if(successThreshold < 0 || successThreshold > numberOfFace) {
+        message += `\n\n ⚠️ *Invalid success setting, you must pick a number between 1 and max roll* ⚠️`
         return message
     }
 
-    // Find result that match sucess threshold
+    // Find result that match success threshold
     for (let i = 0; i < result.length; i++) {
-        if(result[i] >= sucessThreshold) {
-            sucessfullRoll.push(result[i])
+        if(result[i] >= successThreshold) {
+            successfullRoll.push(result[i])
         }
     }
 
-    // 2) If there is sucessfull roll 
-    if(sucessfullRoll.length > 0) {
-        let displayedSucessfullRoll = ''
-        for (let i = 0; i < sucessfullRoll.length; i++) {
-            console.log("ICI", i == sucessfullRoll[sucessfullRoll.length - 1])
-            if(i == (sucessfullRoll.length -1)) {
-                displayedSucessfullRoll += sucessfullRoll[i]
+    // 2) If there is successfull roll 
+    if(successfullRoll.length > 0) {
+        let displayedsuccessfullRoll = ''
+        for (let i = 0; i < successfullRoll.length; i++) {
+            if(i == (successfullRoll.length -1)) {
+                displayedsuccessfullRoll += successfullRoll[i]
             }
             else {
-                displayedSucessfullRoll += sucessfullRoll[i] + ', '
+                displayedsuccessfullRoll += successfullRoll[i] + ', '
             }
         }
-        return message += `\n\n Based on **${sucessThreshold}**, You got **${sucessfullRoll.length}** sucessfull roll : \n\n - ${displayedSucessfullRoll}`
+        return message += `\n\n Based on **${successThreshold}**, You got **${successfullRoll.length}** successfull roll : \n\n - ${displayedsuccessfullRoll}`
     }
 
-    // 3) If there is no sucessfull roll 
-    if(sucessfullRoll.length == 0) {
-        return message += `\n\n Based on **${sucessThreshold}**, you got no sucessfull roll`
+    // 3) If there is no successfull roll 
+    if(successfullRoll.length == 0) {
+        return message += `\n\n Based on **${successThreshold}**, you got no successfull roll`
     }
 }

@@ -52,6 +52,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         // Option for roll command
         let rollOptionParam = userParams[2]
 
+        // If there is more than 3 parameters, add option to rollOptionParam variable
+        if(userParams.length > 3) {
+            for (let i = 3; i < userParams.length; i++) {
+                rollOptionParam += ' ' + userParams[i]
+            }
+        }
+
         console.log('commande :', command)
         console.log('userParams base', userParams)
         console.log('rollParams :', rollParams)

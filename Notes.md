@@ -15,7 +15,7 @@ Step :
     7) Rellier le bot a l'api dungeon&dragon pour avoir des info en temps réel sans devoir aller sur un navigateur
     (Mettre en place, spell by class & lvl, mettre en place le search global)
 
-    8) Permettre plusieurs option sur le même lancé de dès
+    8) Permettre plusieurs option sur le même lancé de dès -ok
 
     8) Déploiment sur aws
 
