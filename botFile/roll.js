@@ -83,7 +83,7 @@ module.exports = {
 
                         message = defineSuccess(result, message, successParam, numberOfFace)
                         break
-                    }  
+                    }
                 }
                 
                 // 3) reroll(/x), -r(/x) (Define dice to reroll based on one or many value)
@@ -92,13 +92,10 @@ module.exports = {
                         let rerollParam = []
 
                         rerollParam = rollOptionParam[i]
-                        console.log('rolloption :', rerollParam)
                         rerollParam = rerollParam.split(rerollCommands[j])
-                        console.log('split with if param :', rerollParam)
                         rerollParam = rerollParam[1]
                         // Split with '/' to get reroll value(s)
                         rerollParam = rerollParam.split('/')
-                        console.log('split with if / :', rerollParam)
 
                         // Handling bad syntax parameters by displaying an error messages
                         if(rerollParam.length == 1) {
@@ -106,12 +103,15 @@ module.exports = {
                             break
                         }
 
-                        message = rerollDice(result, message, rerollParam, user, numberOfFace)                        
+                        message = rerollDice(result, message, rerollParam, user, numberOfFace)
+                        break                        
                     } 
                 }
 
             }
         }
+
+        // End of additionals options
         return message
     },
 };
@@ -275,39 +275,129 @@ const defineSuccess = (result, message, successThreshold, numberOfFace) => {
 // **** Define reroll paramters and roll again if the value is matched ****
 // ************************************************************************
 const rerollDice = (result, message, rerollParam, user, numberOfFace) => {
-    console.log('1111:', user)
-    console.log(rerollParam)
-    console.log(message)
-    console.log(result)
+    console.log('User in REROLLDICE :', user)
+    console.log('rerollParam :', rerollParam)
+    console.log('original message :', message)
+    console.log('original result :', result)
+    console.log('numberOfface :', numberOfFace)
 
-    // Reroll params after removing empty items
-    let trimedParams = []
-    // Possible rerolled dice
-    let resultWithReroll = []
-
-    // Trim empty index of original array
+    // Trim empty index of original array or unmatching params
     for (let i = 0; i < rerollParam.length; i++) {
-        if(rerollParam[i].length != 0) {
-            trimedParams.push(rerollParam[i])
+        console.log('1111array item:', rerollParam[i])
+        
+    }
+    for (let i = 0; i < rerollParam.length; i++) {
+        console.log(rerollParam[i].length)
+        if(rerollParam[i].match(/^[0-9]*$/gm)) {
+            console.log('array item:',rerollParam[i])
+        }
+        else {
+            console.log('array item:',rerollParam[i])
+            rerollParam.splice(i, 1)
+        }
+
+        if(rerollParam[i].length == 0) {
+            rerollParam.splice(i, 1)
         }
     }
 
-    // for (let i = 0; i < result.length; i++) {
-    //     let diceToReroll = []
-    //     for (let j = 0; j < trimedParams.length; j++) {
-    //         if(result[i] == trimedParams[j]) {
-    //             diceToReroll.push(result[i])
-    //         }
-    //         else {
-    //             resultWithReroll.push(result[i]) 
-    //         }
-    //     }
-    // }
-    trimRerollDice(rerollParam, result)
+    console.log('rerollParam after trim :', rerollParam)
+
+    message = trimDiceToReroll(rerollParam, result, message, numberOfFace)
 
     return message
 }
 
-const trimRerollDice = (rerollParam, result) => {
+const trimDiceToReroll = (rerollParam, result, message, numberOfFace) => {
     let diceToReroll = []
+    let resultWithReroll = []
+
+    diceToReroll = trimDice(rerollParam, result)
+    console.log('dice to reroll', diceToReroll)
+    resultWithReroll = sortResult(diceToReroll, result)
+    console.log('result', resultWithReroll)
+    console.log('result original :', result)
+
+    // If dice need to be rerolled enter the loop
+    if(diceToReroll.length > 1) {
+        // Continue untils there is no more dice to reroll
+        while(diceToReroll.length > 1) {
+            // Variable for a more firendly human display
+            let displayedDiceToReroll = ''
+            let displayedResult = ''
+            // New roll made in this function
+            let newRoll = []
+
+            // Create user friendly display of numbers
+            displayedDiceToReroll = numberForMessageDisplay(diceToReroll)
+            displayedResult = numberForMessageDisplay(result)
+
+            // Display the need for reroll, and wich dices need to be rerolled
+            message+= `\n\nBased on ${displayedResult}, there is **${diceToReroll.length}** dice to reroll ! \nDice that need to be rerolled: ${displayedDiceToReroll} `
+        
+            // Reroll dice that needs to be and create user friendly display
+            newRoll = rollDice(result.length, numberOfFace)
+            displayedDiceToReroll = numberForMessageDisplay(newRoll)
+
+            message += `\nAfter reroll you got : ${displayedDiceToReroll}`
+
+            diceToReroll = trimDice(rerollParam, newRoll)
+        }
+    }
+
+    // If there is dice to reroll display it before doing it
+    else {
+        message += `\n\n*No reroll needed*`
+    }
+
+    return message
+}
+
+const trimDice = (rerollParam, result) => {
+    let diceToReroll = []
+
+    // Compare result with wanted reroll value to see if there is any match, push matching one in new array
+    for (let i = 0; i < result.length; i++) {
+        for (let j = 0; j < rerollParam.length; j++) {
+            if(rerollParam[j] == result[i]) {
+                diceToReroll.push(result[i])
+                result.splice(i, 1)
+            }
+        }
+    }
+
+    return diceToReroll
+}
+
+const sortResult = (diceToReroll, result) => {
+    console.log('result in sort :',result)
+    let tempTrimedArray = result
+
+    for (let i = 0; i < result.length; i++) {
+        for (let j = 0; j < diceToReroll.length; j++) {
+            if(result[i] == diceToReroll[j]) {
+                tempTrimedArray.splice(i, 1)
+                diceToReroll.splice(j, 1)
+            }
+        }
+    }
+
+    console.log('11', tempTrimedArray)
+    console.log('111', diceToReroll)
+
+    return tempTrimedArray
+}
+
+const numberForMessageDisplay = (numberArray) => {
+    let displayedDice = ''
+
+    for (let i = 0; i < numberArray.length; i++) {
+        if(i == (numberArray.length - 1)) {
+            displayedDice += numberArray[i]
+        }
+        else {
+            displayedDice += numberArray[i] + ', '
+        }
+    }
+    return displayedDice
 }
