@@ -6,14 +6,16 @@ module.exports = {
         console.log('paramOpt in starting modules: ', rollOptionParam)
         // Saving user command in order to display it later
         let userRollCommand = params
-        // Bonus to add to final count (positive of negative)
+        // Possible bonus to add to final count (positive of negative)
         let bonus = 0
-        // Special display if dice has 20 faces
+        // Boolean, Special display if dice has 20 faces
         let twentyfaceDice = false
         // Sums of rolled dice
         let result
-        // Displayed message
+        // Displayed message (final value returned)
         let message = ''
+        // Operators for bonus value of roll
+        const operators = ['+', '-']
 
         // ** Spilting arguments in command, to get numberOfDice and NumberOfFace **
         params = params.split('d')
@@ -22,21 +24,22 @@ module.exports = {
         let numberOfFace = params[1]
 
         // ** Checking if there is bonus number to add to the roll **
-        if (numberOfFace.includes('+') || numberOfFace.includes('-')) {
-            if(numberOfFace.includes('+')) {
-                faceAndBonus = numberOfFace.split('+')
+        for (let i = 0; i < operators.length; i++) {
+            if (numberOfFace.includes(operators[i])) {
+                faceAndBonus = numberOfFace.split(operators[i])
                 bonus = parseInt(faceAndBonus[1], 10)
+
+                // If the operators is - the integer take negative value
+                if(operators[i] == '-') {
+                    bonus = -Math.abs(bonus)
+                }
+
+                // Restoring number of faces as an usuable value (an integer)
                 numberOfFace = faceAndBonus[0]
-            }
-            if(numberOfFace.includes('-')) {
-                faceAndBonus = numberOfFace.split('-')
-                bonus = parseInt(faceAndBonus[1], 10)
-                bonus = -Math.abs(bonus)
-                numberOfFace = faceAndBonus[0]
-            }
+            }        
         }
 
-        // Check if the dice has 20 faces
+        // Check if the dice has 20 faces, if it does make boolean to true, to display specials messages
         if(numberOfDice == 1 && numberOfFace == 20) {
             twentyfaceDice = true 
         }
@@ -46,54 +49,69 @@ module.exports = {
         // ** Base message based on result and number of dice rolled **
         message = displayRollResult(userRollCommand, result, bonus, user, twentyfaceDice)
 
-        // Additional parameter handled here
+        // Additional options and parameter handled here
         if(rollOptionParam != undefined) {
 
+            // Split params
+            console.log('rollOpt before split:', rollOptionParam)
             rollOptionParam = rollOptionParam.split(' ')
-            console.log('rollOpt after split:',rollOptionParam)
+            console.log('rollOpt after split:', rollOptionParam)
 
             for (let i = 0; i < rollOptionParam.length; i++) {
-                // 1) Average, -a
-                if(rollOptionParam[i] == 'average' || rollOptionParam[i] == '-a') {
-                    message = makeAverage(result, message)
-                }
-    
-                // 2) success(x), -s(x)
-                if(rollOptionParam[i].includes('success') || rollOptionParam[i].includes('-s')) {
-                    let successParam = []
+                // Create differents commands and shortcuts for requested options
+                const averageCommands = ['-average','-a']
+                const sucessCommands = ['-success','-s']
+                const rerollCommands = ['-reroll','-r']
 
-                    if(rollOptionParam[i].includes('success')) {
+                // 1) -average, -a (Calculate the average of rolled dices and display it to user)
+                for (let j = 0; j < averageCommands.length; j++) {
+                    if(rollOptionParam[i].includes(averageCommands[j])) {
+                        message = makeAverage(result, message)
+                        break
+                    }  
+                }
+
+                // 2) -success(x), -s(x) (Define a threshold of sucess for gived rolled dice)    
+                for (let j = 0; j < sucessCommands.length; j++) {
+                    if(rollOptionParam[i].includes(sucessCommands[j])) {
+                        let successParam = []
+
+                        // Edit sucessCommands to get the function param
                         successParam = rollOptionParam[i]
-                        successParam = successParam.split('success')
+                        successParam = successParam.split(sucessCommands[j])
                         successParam = successParam[1]
+
                         message = defineSuccess(result, message, successParam, numberOfFace)
-                    }
-                    else if(rollOptionParam[i].includes('-s')) {
-                        successParam = rollOptionParam[i]
-                        successParam = successParam.split('-s')
-                        successParam = successParam[1]
-                        message = defineSuccess(result, message, successParam, numberOfFace)
-                    }
+                        break
+                    }  
                 }
                 
-                // 3) reroll(x), -r(x)
-                if(rollOptionParam[i].includes('reroll') || rollOptionParam[i].includes('-r')) {
-                    let rerollParam = []
-                    let commandArray = ['reroll', '-r']
+                // 3) reroll(/x), -r(/x) (Define dice to reroll based on one or many value)
+                for (let j = 0; j < rerollCommands.length; j++) {
+                    if(rollOptionParam[i].includes(rerollCommands[j])) {
+                        let rerollParam = []
 
-                    for (let j = 0; j < commandArray.length; j++) {
-                        if(rollOptionParam[i].includes(commandArray[j])) {
-                            rerollParam = rollOptionParam[i]
-                            rerollParam = rerollParam.split(commandArray[j])
-                            rerollParam = rerollParam[1]
-                            rerollParam = rerollParam.split('/')
-                            message = rerollDice(result, message, rerollParam, user)
+                        rerollParam = rollOptionParam[i]
+                        console.log('rolloption :', rerollParam)
+                        rerollParam = rerollParam.split(rerollCommands[j])
+                        console.log('split with if param :', rerollParam)
+                        rerollParam = rerollParam[1]
+                        // Split with '/' to get reroll value(s)
+                        rerollParam = rerollParam.split('/')
+                        console.log('split with if / :', rerollParam)
+
+                        // Handling bad syntax parameters by displaying an error messages
+                        if(rerollParam.length == 1) {
+                            message += `\n\n ⚠️ *You must provide '/value' in order to use the reroll command*`
+                            break
                         }
-                    }
+
+                        message = rerollDice(result, message, rerollParam, user, numberOfFace)                        
+                    } 
                 }
+
             }
         }
-        
         return message
     },
 };
@@ -256,24 +274,40 @@ const defineSuccess = (result, message, successThreshold, numberOfFace) => {
 // ************************************************************************
 // **** Define reroll paramters and roll again if the value is matched ****
 // ************************************************************************
-const rerollDice = (result, message, rerollParam, user) => {
-    console.log('1111:',user)
+const rerollDice = (result, message, rerollParam, user, numberOfFace) => {
+    console.log('1111:', user)
     console.log(rerollParam)
     console.log(message)
     console.log(result)
 
+    // Reroll params after removing empty items
+    let trimedParams = []
+    // Possible rerolled dice
+    let resultWithReroll = []
+
+    // Trim empty index of original array
     for (let i = 0; i < rerollParam.length; i++) {
-        console.log('reroll dans boucle:',rerollParam[i])
-        console.log('reroll length :',rerollParam[i].length)
-
-        if(rerollParam[i].length === 0) {
-            rerollParam = rerollParam.slice(i, i+1)
+        if(rerollParam[i].length != 0) {
+            trimedParams.push(rerollParam[i])
         }
-        console.log('reroll après boucle:',rerollParam[i])
     }
 
-    for (let i = 0; i < result.length; i++) {
-    }
+    // for (let i = 0; i < result.length; i++) {
+    //     let diceToReroll = []
+    //     for (let j = 0; j < trimedParams.length; j++) {
+    //         if(result[i] == trimedParams[j]) {
+    //             diceToReroll.push(result[i])
+    //         }
+    //         else {
+    //             resultWithReroll.push(result[i]) 
+    //         }
+    //     }
+    // }
+    trimRerollDice(rerollParam, result)
 
     return message
+}
+
+const trimRerollDice = (rerollParam, result) => {
+    let diceToReroll = []
 }
