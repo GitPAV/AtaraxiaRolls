@@ -1,3 +1,5 @@
+const { info } = require("winston");
+
 module.exports = {
     // ************************************************************************
     // ** MAIN ROLL FUNCTION, Manage rolls dependings on user command params **
@@ -275,52 +277,37 @@ const defineSuccess = (result, message, successThreshold, numberOfFace) => {
 // **** Define reroll paramters and roll again if the value is matched ****
 // ************************************************************************
 const rerollDice = (result, message, rerollParam, user, numberOfFace) => {
-    console.log('User in REROLLDICE :', user)
-    console.log('rerollParam :', rerollParam)
-    console.log('original message :', message)
-    console.log('original result :', result)
-    console.log('numberOfface :', numberOfFace)
+    let trimedRerollParam = []
+    // console.log('User in REROLLDICE :', user)
+    // console.log('rerollParam :', rerollParam)
+    // console.log('original message :', message)
+    // console.log('original result :', result)
+    // console.log('numberOfface :', numberOfFace)
 
     // Trim empty index of original array or unmatching params
     for (let i = 0; i < rerollParam.length; i++) {
-        console.log('1111array item:', rerollParam[i])
-        
-    }
-    for (let i = 0; i < rerollParam.length; i++) {
-        console.log(rerollParam[i].length)
-        if(rerollParam[i].match(/^[0-9]*$/gm)) {
-            console.log('array item:',rerollParam[i])
-        }
-        else {
-            console.log('array item:',rerollParam[i])
-            rerollParam.splice(i, 1)
-        }
-
-        if(rerollParam[i].length == 0) {
-            rerollParam.splice(i, 1)
+        if(rerollParam[i].match(/^[0-9]*$/gm) && rerollParam[i].length > 0) {
+            trimedRerollParam.push(rerollParam[i])
         }
     }
 
-    console.log('rerollParam after trim :', rerollParam)
-
-    message = trimDiceToReroll(rerollParam, result, message, numberOfFace)
-
+    message = trimDiceToReroll(trimedRerollParam, result, message, numberOfFace)
     return message
 }
 
-const trimDiceToReroll = (rerollParam, result, message, numberOfFace) => {
+const trimDiceToReroll = (trimedRerollParam, result, message, numberOfFace) => {
+    console.log('original result :', result)
+    console.log('trimedReroll param :', trimedRerollParam)
     let diceToReroll = []
     let resultWithReroll = []
 
-    diceToReroll = trimDice(rerollParam, result)
-    console.log('dice to reroll', diceToReroll)
+    diceToReroll = trimDice(trimedRerollParam, result)
+    console.log('DICE TO REROLL AFTER FN :',diceToReroll)
     resultWithReroll = sortResult(diceToReroll, result)
-    console.log('result', resultWithReroll)
-    console.log('result original :', result)
+    console.log('RESULSTWITOUTREROLLED :',resultWithReroll)
 
-    // If dice need to be rerolled enter the loop
+    // If a dice need to be rerolled enter the loop
     if(diceToReroll.length > 1) {
-        // Continue untils there is no more dice to reroll
         while(diceToReroll.length > 1) {
             // Variable for a more firendly human display
             let displayedDiceToReroll = ''
@@ -341,7 +328,7 @@ const trimDiceToReroll = (rerollParam, result, message, numberOfFace) => {
 
             message += `\nAfter reroll you got : ${displayedDiceToReroll}`
 
-            diceToReroll = trimDice(rerollParam, newRoll)
+            diceToReroll = trimDice(trimedRerollParam, newRoll)
         }
     }
 
@@ -353,39 +340,39 @@ const trimDiceToReroll = (rerollParam, result, message, numberOfFace) => {
     return message
 }
 
-const trimDice = (rerollParam, result) => {
+// Based on result and reroll param, get the list of dice that need to be rerolled
+const trimDice = (rerollParam, tempResult) => {
     let diceToReroll = []
 
     // Compare result with wanted reroll value to see if there is any match, push matching one in new array
-    for (let i = 0; i < result.length; i++) {
+    for (let i = 0; i < tempResult.length; i++) {
         for (let j = 0; j < rerollParam.length; j++) {
-            if(rerollParam[j] == result[i]) {
-                diceToReroll.push(result[i])
-                result.splice(i, 1)
+            if(rerollParam[j] == tempResult[i]) {
+                diceToReroll.push(tempResult[i])
             }
         }
     }
-
     return diceToReroll
 }
 
+// Based on result and dice that need reroll, return a list of result without dices that need to be rerolled
 const sortResult = (diceToReroll, result) => {
-    console.log('result in sort :',result)
-    let tempTrimedArray = result
+    console.log('result in sort FN :',result)
+    let resultWithoutReroll = result
 
     for (let i = 0; i < result.length; i++) {
         for (let j = 0; j < diceToReroll.length; j++) {
             if(result[i] == diceToReroll[j]) {
-                tempTrimedArray.splice(i, 1)
+                resultWithoutReroll.splice(i, 1)
                 diceToReroll.splice(j, 1)
             }
         }
     }
 
-    console.log('11', tempTrimedArray)
-    console.log('111', diceToReroll)
+    console.log('result list without reroll value', resultWithoutReroll)
+    console.log('dice to reroll in FN :', diceToReroll)
 
-    return tempTrimedArray
+    return resultWithoutReroll
 }
 
 const numberForMessageDisplay = (numberArray) => {
