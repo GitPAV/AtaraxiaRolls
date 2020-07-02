@@ -9,6 +9,10 @@ let randomStringModule = require('./botFile/randomString')
 
 const axios = require('axios');
 
+const isCommand = (message)=>{
+    return message.substring(0, 1) == '!' || message.substring(0, 1) == '.'
+}
+
 // Configure logger settings
 logger.remove(logger.transports.Console);
 logger.add(new logger.transports.Console, {
@@ -39,9 +43,9 @@ bot.on('message', function (user, userID, channelID, message, evt) {
     console.log(evt)
 
     // Checking the command symbol
-    if (message.substring(0, 1) == '!') {
+    if (message.substring(0, 1) == '!') { // TODO: Put this in function
         // Full user command, splited on whitespace
-        let userParams = message.substring(1).split(' ');
+        let userParams = message.substring(1).split(' '); // Same thing
         // Display message variable, filled by function call
         let messages = ''
 
@@ -92,11 +96,13 @@ bot.on('message', function (user, userID, channelID, message, evt) {
         }
         // Display error messages, if there is no messages to send
         else {
-            let defaultMessageEmojiPool = ['🦮','🐕‍🦺','🐶','🐕',]
+            let defaultMessageEmojiPool = ['🦮','🐕‍🦺','🐶','🐕',] // TODO: Put this in config file
             let randomDogEmoji = Math.floor(Math.random() * defaultMessageEmojiPool.length);
-
+            // Same thing
             messages = `>>> Sorry **${user}**, I did not understand your request   ${defaultMessageEmojiPool[randomDogEmoji]}`
 
+            // let error_message = ['>>> Sorry **','username',', I did not understand your request', 'another_param']
+            // error_message.join(' ')
             bot.sendMessage({
                 to: channelID,
                 message: messages,
